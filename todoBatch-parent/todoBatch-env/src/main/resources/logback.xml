@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+ 
+    <!-- コンソールにログを出力する設定 -->
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy/MM/dd HH:mm:ss}] [%thread] [%-22logger{22}] [%-5level] %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- JP1ログを出力する設定 -->
+    <appender name="JP1_LOG_FILE"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir:-log}/shinkin-batch-JP1.log</file>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日付が変わったらファイルを変更 -->
+            <fileNamePattern>${app.log.dir:-log}/shinkin-batch-JP1-%d{yyyyMMddHH}.log
+            </fileNamePattern>
+            <!-- 保存期間3か月 -->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern><![CDATA[%d{yyyy-MM-dd HH:mm:ss} %thread %msg%n]]></pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- APログを出力する設定 -->
+    <appender name="AP_LOG_FILE"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir:-log}/shinkin-batch-AP.log</file>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日付が変わったらファイルを変更 -->
+            <fileNamePattern>${app.log.dir:-log}/shinkin-batch-AP-%d{yyyyMMdd}.log
+            </fileNamePattern>
+            <!-- 保存期間1か月 -->
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern><![CDATA[date:%d{yyyy-MM-dd HH:mm:ss}\tX-Track:%X{X-Track}\tlevel:%-5level\tmessage:%msg%n]]></pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- JP1出力用ロガー設定 -->
+    <logger name="jp.co.nttdata.shinkin.common.logging.JP1LoggerWrapper"
+        additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="JP1_LOG_FILE" />
+    </logger>
+ 
+    <!-- アプリケーションログ出力設定 -->
+    <logger name="jp.co.nttdata.shinkin" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="AP_LOG_FILE" />
+        <appender-ref ref="consoleLog" />
+    </logger>
+ 
+ 
+    <!-- SQLをコンソールに出力するための設定 -->
+    <logger name="org.terasoluna.batch.async.db.repository"
+        additivity="false">
+        <level value="debug" />
+        <appender-ref ref="AP_LOG_FILE" />
+        <appender-ref ref="consoleLog" />
+    </logger>
+ 
+    <root level="INFO">
+        <appender-ref ref="AP_LOG_FILE" />
+        <appender-ref ref="consoleLog" />
+    </root>
+</configuration>

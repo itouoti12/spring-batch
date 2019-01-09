@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="itouoti.spring.batch.repository.jobsRepository.job3.reader.Job3ReaderRepository">
+
+    <select id="findDeadCustomor" resultType="CustomerDTO">
+        <![CDATA[
+            SELECT
+                 customer_id AS customerId,
+                 store_id AS storeId,
+                 first_name AS firstName,
+                 last_name AS lastName,
+                 email,
+                 address_id AS addressId,
+                 activebool,
+                 create_date AS createDate,
+                 last_update AS lastupdate,
+                 active
+            FROM
+                customer
+            WHERE
+                store_id = #{storeId}
+                AND
+                active = 0
+        ]]>
+    </select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="itouoti.spring.batch.repository.jobsRepository.job4.reader.Job4ReaderRepository">
+
+    <select id="findCustomerAmount" resultType="FindCustomerAmountDTO">
+        <![CDATA[
+            SELECT
+                customer.customer_id AS customerId,
+                first_name AS firstName,
+                last_name AS lastName,
+                SUM (amount) AS amount
+            FROM
+                customer
+            INNER JOIN payment ON payment.customer_id = customer.customer_id
+            WHERE
+                customer.store_id = 1
+            AND
+                customer.active = 1 
+            GROUP BY
+                customer.customer_id
+            ORDER BY
+                customer.customer_id;
+        ]]>
+    </select>
+
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+    ">
+
+    <!-- @Transactionalアノテーションを使ったトランザクション管理 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <!-- propertiesの読み込み -->
+    <context:property-placeholder
+        location="classpath:test.properties"
+        system-properties-mode="OVERRIDE"
+        ignore-resource-not-found="false"
+        ignore-unresolvable="true"
+        order="1" />
+
+    <!-- MyBatis設定 -->
+    <bean
+        id="SqlSessionFactory"
+        class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property
+            name="dataSource"
+            ref="dataSource" />
+        <property
+            name="typeAliasesPackage"
+            value="itouoti.spring.batch.repository" />
+    </bean>
+
+    <!-- MyBatisがマッパーを自動スキャンするパッケージを設定 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property
+            name="basePackage"
+            value="itouoti.spring.batch.repository" />
+    </bean>
+
+    <!-- datasource設定 -->
+    <bean
+        id="realDataSource"
+        class="org.apache.commons.dbcp2.BasicDataSource"
+        destroy-method="close">
+        <property
+            name="driverClassName"
+            value="${database.driverClassName}" />
+        <property
+            name="url"
+            value="${database.url}" />
+        <property
+            name="username"
+            value="${database.username}" />
+        <property
+            name="password"
+            value="${database.password}" />
+        <property
+            name="defaultAutoCommit"
+            value="false" />
+    </bean>
+
+    <bean
+        id="log4jDataSource"
+        class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+        <constructor-arg
+            index="0"
+            ref="realDataSource" />
+    </bean>
+
+    <!-- spring-test-dbunitを使うときは以下のようにdataSourceをラップする -->
+    <bean
+        id="dataSource"
+        class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <constructor-arg
+            index="0"
+            ref="log4jDataSource" />
+    </bean>
+
+    <!-- jdbcTemplateの設定 -->
+    <bean class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource" />
+    </bean>
+
+    <bean
+        id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property
+            name="dataSource"
+            ref="dataSource" />
+        <property
+            name="rollbackOnCommitFailure"
+            value="true" />
+    </bean>
+
+    <bean
+        id="dbUnitDatabaseConfig"
+        class="com.github.springtestdbunit.bean.DatabaseConfigBean">
+        <property name="datatypeFactory">
+            <bean class="itouoti.spring.batch.testCommon.PsqlArrayDataTypeFactory" />
+        
+            <!-- <bean class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory" /> -->
+        </property>
+        <!-- 複数スキーマを用いる -->
+        <!-- エクセルのシートに「スキーマ.テーブル名」でデータを指定 -->
+        <!-- <property name="qualifiedTableNames" value="true" /> -->
+        <!-- 単一スキーマの場合 -->
+        <!-- エクセルのシートに「テーブル名」でデータを指定 -->
+        <property
+            name="caseSensitiveTableNames"
+            value="true" />
+
+        <!-- setData.xslxの空文字フィールドの設定を許可する -->
+        <property
+            name="allowEmptyFields"
+            value="true" />
+    </bean>
+
+    <!-- dataSourceのデフォルトのスキーマを設定 -->
+    <bean
+        id="dbUnitDatabaseConnection"
+        class="com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean">
+        <property
+            name="dataSource"
+            ref="dataSource" />
+        <property
+            name="databaseConfig"
+            ref="dbUnitDatabaseConfig" />
+        <property
+            name="schema"
+            value="${database.defaultSchema}" />
+    </bean>
+</beans>
