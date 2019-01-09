@@ -4,15 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JP1ログファイル出力用ロガークラス
- * @author NTT DATA
+ * ログファイル出力用ロガークラス
+ * @author itouoti
  */
 public class LoggerWrapper {
 
     private static Logger logger = LoggerFactory.getLogger(LoggerWrapper.class);
 
     /**
-     * 情報ログをJP1ログに出力する
+     * 情報ログをログに出力する
      * @param msg 出力メッセージ
      */
     public static void info(
@@ -21,7 +21,7 @@ public class LoggerWrapper {
     }
 
     /**
-     * 警告ログをJP1ログに出力する
+     * 警告ログをログに出力する
      * @param msg 出力メッセージ
      */
     public static void warn(
@@ -30,7 +30,7 @@ public class LoggerWrapper {
     }
 
     /**
-     * エラーログをJP1ログに出力する
+     * エラーログをログに出力する
      * @param msg 出力メッセージ
      */
     public static void error(
