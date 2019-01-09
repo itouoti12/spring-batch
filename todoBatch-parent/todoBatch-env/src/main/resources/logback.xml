@@ -9,13 +9,13 @@
     </appender>
  
     <!-- JP1ログを出力する設定 -->
-    <appender name="JP1_LOG_FILE"
+    <appender name="AP2_LOG_FILE"
         class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${app.log.dir:-log}/shinkin-batch-JP1.log</file>
+        <file>${app.log.dir:-log}/AP2.log</file>
         <rollingPolicy
             class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 日付が変わったらファイルを変更 -->
-            <fileNamePattern>${app.log.dir:-log}/shinkin-batch-JP1-%d{yyyyMMddHH}.log
+            <fileNamePattern>${app.log.dir:-log}/AP2-%d{yyyyMMddHH}.log
             </fileNamePattern>
             <!-- 保存期間3か月 -->
             <maxHistory>3</maxHistory>
@@ -29,11 +29,11 @@
     <!-- APログを出力する設定 -->
     <appender name="AP_LOG_FILE"
         class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${app.log.dir:-log}/shinkin-batch-AP.log</file>
+        <file>${app.log.dir:-log}/AP.log</file>
         <rollingPolicy
             class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 日付が変わったらファイルを変更 -->
-            <fileNamePattern>${app.log.dir:-log}/shinkin-batch-AP-%d{yyyyMMdd}.log
+            <fileNamePattern>${app.log.dir:-log}/AP-%d{yyyyMMdd}.log
             </fileNamePattern>
             <!-- 保存期間1か月 -->
             <maxHistory>1</maxHistory>
@@ -45,14 +45,14 @@
     </appender>
  
     <!-- JP1出力用ロガー設定 -->
-    <logger name="jp.co.nttdata.shinkin.common.logging.JP1LoggerWrapper"
+    <logger name="itouoti.spring.batch.common.logging.LoggerWrapper"
         additivity="false">
         <level value="INFO" />
-        <appender-ref ref="JP1_LOG_FILE" />
+        <appender-ref ref="AP2_LOG_FILE" />
     </logger>
  
     <!-- アプリケーションログ出力設定 -->
-    <logger name="jp.co.nttdata.shinkin" additivity="false">
+    <logger name="itouoti.spring.batch" additivity="false">
         <level value="INFO" />
         <appender-ref ref="AP_LOG_FILE" />
         <appender-ref ref="consoleLog" />
